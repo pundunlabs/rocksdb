@@ -875,6 +875,15 @@ Status PosixWritableFile::Allocate(uint64_t offset, uint64_t len) {
 }
 #endif
 
+#define NR_sync_file_range 277
+int sync_file_range (int fd, __off64_t from, __off64_t to, unsigned int flags)
+{
+  return syscall (NR_sync_file_range, fd,
+			 __LONG_LONG_PAIR ((long) (from >> 32), (long) from),
+			 __LONG_LONG_PAIR ((long) (to >> 32), (long) to),
+			 flags);
+}
+
 #ifdef OS_LINUX
 Status PosixWritableFile::RangeSync(uint64_t offset, uint64_t nbytes) {
   assert(offset <= std::numeric_limits<off_t>::max());
